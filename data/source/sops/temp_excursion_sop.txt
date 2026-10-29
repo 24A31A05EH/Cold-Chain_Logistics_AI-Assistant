@@ -1,0 +1,8 @@
+Standard Operating Procedure: Cargo Temperature Excursion
+1. Trigger: If cargo temperature exceeds 8.0°C for refrigerated items or drops below -20.0°C for deep freeze items for more than 15 consecutive minutes.
+2. Immediate Actions:
+   a. Notify the driver immediately to verify cooling unit power and door seal integrity.
+   b. Dispatcher checks auxiliary power telemetry and compressor error codes.
+3. Escalation:
+   a. If temperature remains above critical threshold after 30 minutes, re-route vehicle to the nearest secondary cold storage depot.
+   b. Log an emergency cargo inspection report upon arrival.

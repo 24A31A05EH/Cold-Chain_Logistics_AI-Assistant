@@ -1,0 +1,7 @@
+Standard Operating Procedure: Route Delays and Port Congestion
+1. Trigger: ETA variance exceeds 45 minutes or port congestion status is marked CRITICAL/HIGH.
+2. Immediate Actions:
+   a. Review secondary and tertiary bypass routes to circumvent choke points.
+   b. Notify destination distribution center manager regarding updated delivery window.
+3. Rerouting:
+   a. Recalculate fuel economy and route risk score before confirming route change with the driver.

@@ -1,0 +1,11 @@
+# Virtual environment
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Sensitive environment variables
+.env
+
+# Streamlit local settings
+.streamlit/

@@ -1,0 +1,7 @@
+Standard Operating Procedure: Vehicle Mechanical & Engine Overheating
+1. Trigger: Engine coolant temperature exceeds 105°C or speed drops below 10 km/h on active transit corridors.
+2. Immediate Actions:
+   a. Command vehicle to pull over safely into the nearest rest stop or hard shoulder.
+   b. Activate auxiliary refrigeration backup generator to preserve cold chain payload independently of engine status.
+3. Recovery:
+   a. Request mobile emergency repair unit or dispatch replacement tractor unit to swap trailer within 2 hours.
