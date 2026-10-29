@@ -1,142 +1,116 @@
-❄️ Autonomous Cold-Chain Logistics AI Assistant
+# ❄️ Autonomous Cold-Chain Logistics AI Assistant
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://cold-chainlogisticsai-assistant-7jwwanxkzcighkdd52xrtp.streamlit.app)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-Orchestration-1C3C3C?style=flat)
+![Pinecone](https://img.shields.io/badge/Pinecone-Vector_DB-000000?style=flat)
+![Groq](https://img.shields.io/badge/Groq-Llama_3_Inference-F05A28?style=flat)
+![Docker](https://img.shields.io/badge/Docker-MSSQL_Container-2496ED?style=flat&logo=docker&logoColor=white)
+
 An enterprise-grade, autonomous multi-tool AI dispatcher designed to monitor cold-chain pharmaceutical cargo in real-time. The system cross-references active fleet telemetry with live corridor weather conditions and vectorized regulatory standard operating procedures (SOPs) to detect thermal excursions, isolate mechanical failures from ambient heatwaves, and formulate immediate dispatch mitigation plans.
 
-📌 Problem Context
-Cold-chain logistics—particularly for biologicals, mRNA vaccines, and insulin—demands strict thermal compliance (typically 2.0°C to 8.0°C).
+---
+
+## 📌 Problem Context
+
+Cold-chain logistics—particularly for biologicals, mRNA vaccines, and insulin—demands strict thermal compliance (typically 2.0°C to 8.0°C). 
 
 When an excursion occurs, human dispatchers face two critical bottlenecks:
-
-Root-Cause Latency: Determining whether a spike is driven by external environmental factors (e.g., extreme asphalt corridor heatwaves) or internal unit failures (e.g., refrigeration compressor breakdown, door seal failure).
-
-SOP Compliance Delays: Manually searching complex regulatory manuals (FDA 21 CFR / WHO Good Distribution Practices) to identify required remediation windows before cargo spoils.
+1. Root-Cause Latency: Determining whether a spike is driven by external environmental factors (e.g., extreme asphalt corridor heatwaves) or internal unit failures (e.g., refrigeration compressor breakdown, door seal failure).
+2. SOP Compliance Delays: Manually searching complex regulatory manuals (FDA 21 CFR / WHO Good Distribution Practices) to identify required remediation windows before cargo spoils.
 
 This system automates that triage lifecycle in seconds using an agentic loop.
 
-🏗️ System Architecture
-Plaintext
-                               +-----------------------------+
-                               |     Streamlit Cloud UI      |
-                               +--------------+--------------+
-                                              |
-                                              v
-                               +-----------------------------+
-                               |  LangChain / Groq LLM Agent |
-                               +--------------+--------------+
-                                              |
-            +---------------------------------+---------------------------------+
-            |                                 |                                 |
-            v                                 v                                 v
-   [Tool 1: Telemetry DB]           [Tool 2: Weather API]             [Tool 3: Vector DB]
-   - Primary: MSSQL (Docker)        - Open-Meteo REST API             - Pinecone Vector DB
-   - Fallback: SQLite               - Coordinate-based fetching       - Google GenAI Embeddings
-   - Read-Only SQL Sanitization     - Live corridor ambient temps     - Regulatory SOP retrieval
-Multi-Tool Agent Pipeline:
-Telemetry Monitor (query_telemetry_db): Queries active shipment records, GPS coordinates, setpoints, and sensor temperatures.
+---
 
-Environmental Correlator (fetch_corridor_conditions): Extracts exact latitude/longitude from telemetry and calls Open-Meteo's live satellite/weather feed to fetch ambient road-level temperatures.
+## 🏗️ System Architecture
 
-Regulatory SOP Engine (search_compliance_sop): Embeds user/incident queries with Google GenAI (text-embedding-004) and performs cosine similarity search against regulatory protocols indexed in Pinecone.
+- Telemetry Monitor (query_telemetry_db): Queries active shipment records, GPS coordinates, setpoints, and sensor temperatures.
+- Environmental Correlator (fetch_corridor_conditions): Extracts exact latitude/longitude from telemetry and calls Open-Meteo's live satellite/weather feed to fetch ambient road-level temperatures.
+- Regulatory SOP Engine (search_compliance_sop): Embeds user/incident queries with Google GenAI (text-embedding-004) and performs cosine similarity search against regulatory protocols indexed in Pinecone.
 
-🛡️ Resilient Dual-Layer Database Architecture
+---
+
+## 🛡️ Resilient Dual-Layer Database Architecture
+
 In production cloud deployments (such as Streamlit Community Cloud), local Docker daemons are unavailable. To ensure uninterrupted uptime without code modifications, the system incorporates an automated failover engine:
 
-Plaintext
-[Incoming Query] ---> Try: Primary Live MSSQL (Docker Container: 1433)
-                             |
-                             +--> [Failure / Timeout] 
-                             |
-                             +--> Fallback: Local Embedded SQLite (data/fleet_fallback.db)
-                                  (Auto-cleans T-SQL schema prefixes and executes query)
-Primary Layer: Live Microsoft SQL Server container running in Docker for simulated enterprise IoT ingestion.
+- Primary Layer: Live Microsoft SQL Server container running in Docker for simulated enterprise IoT ingestion.
+- Failover Layer: Resilient SQLite database (data/fleet_fallback.db) with automatic schema translation (VW_ACTIVE_FLEET).
+- Security Guardrail: Enforces strict read-only execution, rejecting any INSERT, UPDATE, DELETE, or DROP statements generated by the agent.
 
-Failover Layer: Resilient SQLite database (data/fleet_fallback.db) with automatic schema translation (VW_ACTIVE_FLEET).
+---
 
-Security Guardrail: Enforces strict read-only execution, rejecting any INSERT, UPDATE, DELETE, or DROP statements generated by the agent.
+## 📂 Repository Structure
 
-📂 Repository Structure
-Plaintext
-Cold-Chain_Logistics_AI-Assistant/
-├── .gitignore                   # Excludes venv, .env, and local caches
-├── README.md                    # Detailed documentation and architecture
-├── app.py                       # Streamlit web application interface
-├── requirements.txt             # Production dependency manifest
-├── data/
-│   ├── fleet_fallback.db        # SQLite failover database for cloud execution
-│   └── mock_sops.json           # Raw compliance standards and protocols
-└── src/
-    ├── __init__.py
-    ├── agent_tools.py           # Tool definitions (MSSQL/SQLite, Weather, Pinecone)
-    ├── orchestrator.py          # LangChain agent state graph and prompt engineering
-    └── populate_pinecone.py     # SOP indexing pipeline using Google GenAI embeddings
-⚡ Live Demo & Verification Walkthrough
-Live App URL: cold-chainlogisticsai-assistant.streamlit.app
+- Cold-Chain_Logistics_AI-Assistant/
+  - .gitignore: Excludes venv, .env, and local caches
+  - README.md: Detailed documentation and architecture
+  - app.py: Streamlit web application interface
+  - requirements.txt: Production dependency manifest
+  - data/
+    - fleet_fallback.db: SQLite failover database for cloud execution
+    - mock_sops.json: Raw compliance standards and protocols
+  - src/
+    - agent_tools.py: Tool definitions (MSSQL/SQLite, Weather, Pinecone)
+    - orchestrator.py: LangChain agent state graph and prompt engineering
+    - populate_pinecone.py: SOP indexing pipeline using Google GenAI embeddings
 
-Test Prompts to Run:
-1. Baseline Fleet Status (Nominal Operations)
-Plaintext
+---
+
+## ⚡ Live Demo & Verification Walkthrough
+
+Live App URL: https://cold-chainlogisticsai-assistant-7jwwanxkzcighkdd52xrtp.streamlit.app
+
+### Test Prompts to Run:
+
+1. Baseline Fleet Status (Nominal Operations):
 What is the current status of container CNT-219?
 Behavior: Executes a read-only query against the active fleet view. Verifies that container CNT-219 holding frozen plasma is stable within its target threshold without triggering false alarms.
 
-2. Cross-Corridor Anomaly Detection & Weather Correlation
-Plaintext
+2. Cross-Corridor Anomaly Detection & Weather Correlation:
 Check the telemetry database for active high-risk cargo or temperature excursion anomalies. Fetch live corridor conditions for the affected coordinates.
 Behavior: Detects that container CNT-804 (biological vaccines) is operating at 9.4°C against a 4.0°C target. Automatically extracts coordinates (34.0522, -118.2437) and calls Open-Meteo for real-time ambient corridor conditions.
 
-3. Full Autonomous Triage & Incident Action Plan
-Plaintext
+3. Full Autonomous Triage & Incident Action Plan:
 Container CNT-804 is alarming. Cross-reference live ambient weather with compliance SOPs to produce an executive incident triage report and driver action checklist.
-Behavior:
+Behavior: Confirms ambient weather is nominal, diagnosing an internal mechanical compressor or seal failure. Queries Pinecone to retrieve WHO/FDA vaccine breach protocols (>8.0°C rule). Generates a structured operational report detailing time-to-spoilage, emergency rerouting, secondary dry-ice requirements, and driver checklist.
 
-Confirms ambient weather is nominal, diagnosing an internal mechanical compressor or seal failure.
+---
 
-Queries Pinecone to retrieve WHO/FDA vaccine breach protocols (>8.0°C rule).
+## 🛠️ Local Development Setup
 
-Generates a structured operational report detailing time-to-spoilage, emergency rerouting, secondary dry-ice requirements, and driver checklist.
-
-🛠️ Local Development Setup
-1. Clone the Repository
-Bash
+1. Clone the repository:
 git clone https://github.com/24A31A05EH/Cold-Chain_Logistics_AI-Assistant.git
 cd Cold-Chain_Logistics_AI-Assistant
-2. Configure Environment
-Create and activate a virtual environment:
 
-Bash
+2. Configure environment:
 python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
-Install dependencies:
-
-Bash
+venv\Scripts\activate
 pip install -r requirements.txt
-3. Set Up Environment Variables
-Create a .env file in the project root:
 
-Code snippet
+3. Set up environment variables (.env):
 GROQ_API_KEY=gsk_your_groq_api_key
 GEMINI_API_KEY=your_gemini_api_key
 PINECONE_API_KEY=your_pinecone_api_key
 PINECONE_INDEX_NAME=cold-chain-sops
-4. (Optional) Run with Primary Docker MSSQL
-If you wish to run the primary SQL Server database:
 
-Bash
-docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourStrongPassword123!" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
-(If Docker is omitted or stopped, the system will seamlessly engage the local SQLite fallback).
-
-5. Launch the Web Interface
-Bash
+4. Launch the web interface:
 streamlit run app.py
-📊 Tech Stack Summary
-Layer	Technology	Role
-Agent Reasoning	LangChain & Groq (Llama-3 / Mixtral)	Tool calling, intent routing, diagnostic reasoning
-User Interface	Streamlit	Real-time chat UI, telemetry presentation
-Primary Database	Microsoft SQL Server (Docker)	Enterprise IoT telemetry tables & active fleet views
-Fallback Database	SQLite (sqlite3)	High-availability zero-config cloud failover storage
-External Weather	Open-Meteo REST API	Real-time ambient road & corridor weather tracking
-Vector Database	Pinecone	Semantic storage for FDA/WHO cold-chain regulatory SOPs
-Embeddings	Google GenAI (text-embedding-004)	High-dimensional dense vector embeddings
-📄 License
+
+---
+
+## 📊 Tech Stack Summary
+
+- Agent Reasoning: LangChain & Groq (Llama-3 / Mixtral)
+- User Interface: Streamlit
+- Primary Database: Microsoft SQL Server (Docker)
+- Fallback Database: SQLite (sqlite3)
+- External Weather: Open-Meteo REST API
+- Vector Database: Pinecone
+- Embeddings: Google GenAI (text-embedding-004)
+
+---
+
+## 📄 License
 This project is open-source under the MIT License.
